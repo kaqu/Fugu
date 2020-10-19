@@ -71,7 +71,7 @@ let cancelation = container.observe(SomeProperty.self) { newValue in
 
 ## License
 
-Copyright 2020 Miquido
+Copyright 2020 KaQu
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
