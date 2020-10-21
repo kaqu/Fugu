@@ -2,9 +2,35 @@
 
 "[Fugu](https://en.wikipedia.org/wiki/Fugu) can be lethally poisonous due to its tetrodotoxin, meaning it must be carefully prepared to remove toxic parts and to avoid contaminating the meat."
 
-##
+## What?
 
-Strongly typed yet dynamic property and dependency management for Swift.
+Strongly typed yet dynamic property and dependency management for Swift. Here is a quick example how it looks like:
+
+```swift
+// Get container instance...
+let container = Container()
+// ...and access some feature or property, it will be initialized if needed.
+// Here we use timestamp - access current system time - we are able to easily access it...
+let timestamp = container.timestamp.now
+// ...and swap it if needed for mocking or testing.
+container.timestamp = .constant(0)
+// Then you use the new one through container in each places at once.
+let constant = container.timestamp.now
+```
+
+## Why?
+
+Dependency and state management can be hard to be done right. It requires a lot of thought and code or becomes messy. Fugu aims to partially solve that problem by providing convenient interface and management tools to make it a lot easier and require least lines of code possible.
+
+There are two main use cases for Fugu: dependency and dynamic property management.
+For dependency management it is intended to be used as thin, managable layer providing abstractions for all external systems and IO. It is easy to pass around, build even complex initialization trees for dependencies and swap each element selectively if needed.
+Property management allows easy access to configuration including these used in initialization of features. It can be also used for passing shared data around application in easy, managable and safe way.
+
+## How?
+
+Containers manages access to properties and features. It identies those by its types. Each type defines unique key used to store associated value. Properties require default value (which can be nil for optional value types) while Features require definition of its initialization. Those simple reqirements allow passing around lazily initialized parts of system while keeping control about all its aspects.
+
+Here is some more detailed example, explaining how to create own properties and features:
 
 ```swift
 // Define property and its value type, it can be property itself.
@@ -17,7 +43,7 @@ enum SomeProperty: Property {
 // Then get some property container...
 let container = Container()
 // ...and access property value
-let default = container[SomeProperty.self]
+let defaultValue = container[SomeProperty.self]
 container[SomeProperty.self] = 7
 let previouslySet = container[SomeProperty.self]
 
@@ -29,7 +55,7 @@ extension PropertyContainer {
     set { self[SomeProperty.self] = newValue }
   }
 }
-// Which gives you more natural access
+// Which gives you more natural and fluent access
 let value = container.someProperty // accessing same property as before
 container.someProperty = 1 // and you can also set values
 
@@ -57,17 +83,18 @@ extension FeatureContainer {
     set { self[SomeFeature.self] = newValue }
   }
 }
-
+// Here it is - lazily initialized, using other values from container
 let answerFromFeature = container.someFeature.answer
 
-// Additionally to all of those features you can
-// observe both property and feature changes in container
+// Additionally you can observe both property and feature changes in container
 let cancelation = container.observe(SomeProperty.self) { newValue in
   // get notified on each value change
 }
-// You can cancel observation at any time using returned cancellable
+// You can cancel observation at any time by using returned cancellable
 
 ```
+
+Each Container instance contains its own store for properties and features. Please make sure you deallocate unused ones or use single container to share exact same instances. The same property or feature is initialized independently in each container.
 
 ## License
 
