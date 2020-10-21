@@ -5,7 +5,6 @@ import struct Foundation.UUID
 import protocol Combine.Cancellable
 #endif
 
-@dynamicMemberLookup
 public final class Container {
   
   public static let shared: Container = .init()
@@ -15,16 +14,6 @@ public final class Container {
   fileprivate var observers: Dictionary<TypeIdentifier, Dictionary<UUID, (Any) -> Void>> = .init()
   
   public init() {}
-  
-  public subscript<Value>(dynamicMember keyPath: ReferenceWritableKeyPath<Container, Value>) -> Value {
-    get { self[keyPath: keyPath] }
-    set { self[keyPath: keyPath] = newValue }
-  }
-  
-  public subscript<Value>(keyPath: ReferenceWritableKeyPath<Container, Value>) -> Value {
-    get { self[keyPath: keyPath] }
-    set { self[keyPath: keyPath] = newValue }
-  }
 }
 
 extension Container: FeatureContainer {
